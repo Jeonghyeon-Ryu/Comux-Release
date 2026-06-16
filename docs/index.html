@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comux — AI 에이전트를 위한 터미널 멀티플렉서</title>
+  <meta name="description" content="Comux는 Claude Code 같은 AI 에이전트를 한 화면에서 지휘하도록 설계된 Windows 터미널 멀티플렉서입니다. 가로 워크스페이스 탭, 분할 패널, 내장 브라우저, 실시간 상태 알림." />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/favicon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Comux — AI 에이전트를 위한 터미널 멀티플렉서" />
+  <meta property="og:description" content="AI 에이전트를 한 화면에서 지휘하는 Windows 터미널 멀티플렉서." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/comux-full.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ════════════════════════ TOKENS ════════════════════════ */
+    :root {
+      --bg: #08090a;
+      --bg-1: #0d0e10;
+      --bg-2: #131417;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #f7f8f8;
+      --text-2: #b4b8c0;
+      --text-3: #8a8f98;
+      --text-4: #62666d;
+      --accent: #7c82ff;
+      --accent-2: #b06bff;
+      --grad: linear-gradient(135deg, #7c82ff 0%, #b06bff 100%);
+      --grad-soft: linear-gradient(135deg, rgba(124,130,255,0.16), rgba(176,107,255,0.16));
+      --radius: 14px;
+      --max: 1120px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    section { scroll-margin-top: 88px; }
+    ::selection { background: rgba(124,130,255,0.35); }
+
+    /* Ambient aurora behind the page */
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .aurora::before, .aurora::after {
+      content: ''; position: absolute; border-radius: 50%; filter: blur(120px);
+    }
+    .aurora::before {
+      width: 720px; height: 720px; top: -260px; left: 50%; transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(124,130,255,0.22), transparent 70%);
+    }
+    .aurora::after {
+      width: 600px; height: 600px; top: 120px; right: -200px;
+      background: radial-gradient(circle, rgba(176,107,255,0.14), transparent 70%);
+    }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* ════════════════════════ HEADER ════════════════════════ */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(14px) saturate(1.6);
+      -webkit-backdrop-filter: blur(14px) saturate(1.6);
+      background: rgba(8, 9, 10, 0.6);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    header.scrolled { border-bottom-color: var(--border); background: rgba(8, 9, 10, 0.82); }
+    .nav {
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 17px; letter-spacing: -0.02em; }
+    .brand img { width: 26px; height: 26px; border-radius: 7px; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links a {
+      color: var(--text-3); font-size: 14.5px; font-weight: 500; padding: 8px 14px;
+      border-radius: 8px; transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-link {
+      width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+      color: var(--text-3); border-radius: 9px; transition: color 0.15s, background 0.15s;
+    }
+    .icon-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: var(--font); font-weight: 600; font-size: 14.5px; cursor: pointer;
+      border-radius: 10px; padding: 10px 18px; border: 1px solid transparent;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.15s, background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      color: #fff; background: var(--grad);
+      box-shadow: 0 6px 24px rgba(124,130,255,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .btn-primary:hover { box-shadow: 0 10px 32px rgba(124,130,255,0.5), inset 0 1px 0 rgba(255,255,255,0.25); }
+    .btn-ghost { color: var(--text); background: rgba(255,255,255,0.04); border-color: var(--border); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: var(--border-strong); }
+    .btn-sm { padding: 8px 15px; font-size: 13.5px; }
+
+    /* ════════════════════════ HERO ════════════════════════ */
+    .hero { position: relative; z-index: 1; padding: 96px 0 56px; text-align: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; margin-bottom: 28px;
+      padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+      color: var(--text-2); background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 76px); line-height: 1.04; font-weight: 700;
+      letter-spacing: -0.035em; margin: 0 auto 24px; max-width: 14ch;
+      background: linear-gradient(180deg, #ffffff 30%, #9aa0ab 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero h1 .grad {
+      background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero .sub {
+      font-size: clamp(16px, 2.2vw, 19px); color: var(--text-3); max-width: 620px;
+      margin: 0 auto 36px; line-height: 1.65;
+    }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-meta { margin-top: 18px; font-size: 13px; color: var(--text-4); }
+
+    /* Hero screenshot */
+    .shot {
+      position: relative; z-index: 1; margin: 56px auto 0; max-width: 1000px;
+      border-radius: 16px; padding: 1px; background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02));
+    }
+    .shot-glow { position: absolute; inset: -1px -1px auto; height: 60%; border-radius: 16px;
+      background: radial-gradient(60% 100% at 50% 0%, rgba(124,130,255,0.25), transparent 70%); filter: blur(30px); z-index: -1; }
+    .shot img { display: block; width: 100%; border-radius: 15px; }
+
+    /* ════════════ APP MOCKUP (hero product shot) ════════════ */
+    .mock {
+      display: flex; flex-direction: column; width: 100%; border-radius: 15px; overflow: hidden;
+      background: #0c0d0f; border: 1px solid rgba(255,255,255,0.06);
+      font-size: 11.5px; line-height: 1.5; text-align: left; user-select: none;
+    }
+    /* titlebar */
+    .mk-title { display: flex; align-items: center; height: 34px; padding: 0 10px; background: #111214; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; }
+    .mk-title .mk-logo { width: 16px; height: 16px; border-radius: 4px; }
+    .mk-ic { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-4); border-radius: 5px; }
+    .mk-ic svg { width: 13px; height: 13px; }
+    .mk-title .mk-ttl { flex: 1; text-align: center; color: var(--text-4); font-size: 11.5px; }
+    .mk-win { display: flex; gap: 16px; color: var(--text-4); padding-right: 4px; }
+    .mk-win span { width: 11px; height: 11px; display: inline-flex; }
+    /* workspace tab bar */
+    .mk-tabs { display: flex; align-items: stretch; height: 30px; background: #161719; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0 4px; gap: 2px; }
+    .mk-tab { display: flex; align-items: center; gap: 6px; padding: 0 11px; color: var(--text-4); border-bottom: 2px solid transparent; white-space: nowrap; }
+    .mk-tab.active { color: #fff; background: rgba(255,255,255,0.06); border-bottom-color: var(--accent); }
+    .mk-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .mk-dot.run { background: #ff9800; box-shadow: 0 0 6px rgba(255,152,0,0.6); }
+    .mk-dot.ok { background: #4caf50; }
+    .mk-dot.stop { background: #e53935; }
+    .mk-dot.idle { background: rgba(255,255,255,0.2); }
+    .mk-tab-new { display: flex; align-items: center; color: var(--text-4); padding: 0 8px; }
+    /* body */
+    .mk-body { display: flex; height: 480px; }
+    /* file tree */
+    .mk-tree { width: 184px; flex-shrink: 0; background: #0f1012; border-right: 1px solid rgba(255,255,255,0.05); overflow: hidden; display: flex; flex-direction: column; }
+    .mk-tree-head { display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .mk-tree-head .ttl { color: #fff; font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-bottom: -7px; }
+    .mk-tree-head .col { color: var(--text-4); }
+    .mk-tree-list { padding: 6px 6px; overflow-y: auto; }
+    .mk-row { display: flex; align-items: center; gap: 6px; padding: 2.5px 6px; border-radius: 5px; color: var(--text-2); white-space: nowrap; }
+    .mk-row:hover { background: rgba(255,255,255,0.04); }
+    .mk-row.sel { background: rgba(124,130,255,0.16); color: #fff; }
+    .mk-row .chev { width: 10px; color: var(--text-4); flex-shrink: 0; }
+    .mk-row .nm { overflow: hidden; text-overflow: ellipsis; }
+    /* file/folder icons */
+    .fi { width: 15px; height: 15px; border-radius: 3.5px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 7.5px; font-weight: 700; color: #fff; line-height: 1; }
+    .fi-folder { background: none; color: #d8a657; font-size: 13px; }
+    .fi-ts { background: #2f74c0; } .fi-tsx { background: #2f74c0; }
+    .fi-js { background: #c9a227; color: #1b1b1b; } .fi-json { background: #8a6d1b; }
+    .fi-css { background: #2d6db5; } .fi-html { background: #d9551f; }
+    .fi-py { background: linear-gradient(135deg,#3572A5,#ffd43b); } .fi-go { background: #00add8; color: #06222b; }
+    .fi-rs { background: #b7410e; } .fi-sql { background: #c44d8a; }
+    .fi-sh { background: #3f8f3f; } .fi-md { background: #3b4b5c; }
+    .fi-yml { background: #a33; } .fi-env { background: #4a4d52; color: #ffd43b; }
+    .fi-svg { background: #b06bff; } .fi-img { background: #2aa876; }
+    .fi-docker { background: #2496ed; } .fi-git { background: #5a5e66; color: #f05133; }
+    .fi-lock { background: #5a5e66; }
+    /* terminal panes */
+    .mk-term { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #0c0d0f; border-right: 1px solid rgba(255,255,255,0.05); }
+    .mk-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .mk-pane + .mk-pane { border-top: 1px solid rgba(255,255,255,0.05); }
+    .mk-pane-head { display: flex; align-items: center; gap: 8px; height: 26px; padding: 0 10px; background: #141517; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-3); flex-shrink: 0; }
+    .mk-pane-head .ph-ttl { flex: 1; }
+    .mk-pane-head .ph-ic { color: var(--text-4); }
+    .mk-term-body { flex: 1; padding: 8px 11px; font-family: var(--mono); font-size: 11px; line-height: 1.65; color: var(--text-2); overflow: hidden; white-space: pre-wrap; }
+    .mk-term-body .pr { color: #4caf50; }
+    .mk-term-body .dim { color: var(--text-4); }
+    .mk-term-body .am { color: #ff9800; }
+    .mk-term-body .lnk { color: #61afef; text-decoration: underline; }
+    .mk-term-body .ok2 { color: #4caf50; }
+
+    /* browser pane */
+    .mk-browser { flex: 1.05; min-width: 0; display: flex; flex-direction: column; background: #0c0d0f; border-right: 1px solid rgba(255,255,255,0.05); }
+    .mk-addr { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 9px; background: #141517; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+    .mk-addr .nav { color: var(--text-4); display: inline-flex; gap: 7px; align-items: center; }
+    .mk-addr .url { flex: 1; background: #0a0b0d; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; color: var(--text-3); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mk-web { flex: 1; overflow: hidden; background: #0e0f13; }
+    .bw-top { display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; background: #15161a; border-bottom: 1px solid var(--border); }
+    .bw-logo { width: 16px; height: 16px; border-radius: 5px; background: var(--grad); flex-shrink: 0; }
+    .bw-top .nm { font-weight: 600; color: #fff; font-size: 11px; }
+    .bw-top .sp { flex: 1; }
+    .bw-pill { font-size: 9px; color: var(--text-3); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; }
+    .bw-main { padding: 15px 13px; }
+    .bw-main h4 { font-size: 13.5px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; color: #fff; }
+    .bw-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 12px; }
+    .bw-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 9px; padding: 9px; }
+    .bw-card span { display: block; font-size: 8.5px; color: var(--text-4); margin-bottom: 4px; }
+    .bw-card b { font-size: 14px; color: #fff; font-weight: 700; }
+    .bw-card.acc b { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .bw-chart { display: flex; align-items: flex-end; gap: 4px; height: 56px; padding: 9px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 9px; }
+    .bw-chart i { flex: 1; background: var(--grad); border-radius: 3px 3px 0 0; opacity: 0.85; }
+
+    /* editor / code panel */
+    .mk-editor { flex: 1.35; min-width: 0; display: flex; flex-direction: column; background: #0a0b0d; }
+    .mk-etabs { display: flex; align-items: stretch; height: 30px; background: #0f1012; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .mk-etab { display: flex; align-items: center; gap: 7px; padding: 0 14px; color: var(--text-4); border-right: 1px solid rgba(255,255,255,0.05); }
+    .mk-etab.active { color: #fff; background: #0a0b0d; }
+    .mk-etab .x { color: var(--text-4); margin-left: 2px; }
+    .mk-code { flex: 1; display: grid; grid-template-columns: 40px 1fr; overflow: hidden; }
+    .mk-gutter { text-align: right; padding: 12px 10px 12px 0; color: #3a3d44; font-family: var(--mono); font-size: 12px; line-height: 1.85; user-select: none; }
+    .mk-lines { padding: 12px 0 12px 14px; overflow: hidden; font-family: var(--mono); font-size: 12px; line-height: 1.85; white-space: pre; color: var(--text-2); }
+    .mk-lines .ln { display: block; }
+    /* token colors */
+    .tk { color: #c678dd; }   /* keyword */
+    .ts { color: #98c379; }   /* string */
+    .tc { color: #5c6370; font-style: italic; } /* comment */
+    .tf { color: #61afef; }   /* function/component */
+    .tt { color: #e5c07b; }   /* type/tag */
+    .tp { color: #56b6c2; }   /* punctuation-ish / props */
+    .tv { color: #e06c75; }   /* variable / attr */
+
+    @media (max-width: 1080px) { .mk-browser { display: none; } }
+    @media (max-width: 860px) { .mk-term { display: none; } }
+    @media (max-width: 640px) {
+      .mk-tree { display: none; }
+      .mk-body { height: 420px; }
+      .mk-tab:nth-child(n+4) { display: none; }
+    }
+
+    /* ════════════════════════ SECTION SHELL ════════════════════════ */
+    .section { position: relative; z-index: 1; padding: 110px 0; }
+    .section-head { text-align: center; max-width: 640px; margin: 0 auto 56px; }
+    .label { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 14px; }
+    .section-head h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; }
+    .section-head p { margin-top: 16px; color: var(--text-3); font-size: 17px; }
+
+    /* Feature grid */
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card {
+      position: relative; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; transition: transform 0.2s ease, border-color 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+    .card::before { content: ''; position: absolute; inset: 0 0 auto; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent); opacity: 0; transition: opacity 0.25s; }
+    .card:hover { transform: translateY(-4px); border-color: var(--border-strong); background: rgba(255,255,255,0.035); }
+    .card:hover::before { opacity: 1; }
+    .card .ico {
+      width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      background: var(--grad-soft); border: 1px solid var(--border); color: var(--accent); margin-bottom: 16px;
+    }
+    .card h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: var(--text-3); line-height: 1.6; }
+    .card.span2 { grid-column: span 2; }
+
+    /* ════════════════════════ DOWNLOAD ════════════════════════ */
+    .download-card {
+      max-width: 920px; margin: 0 auto; border-radius: 20px; padding: 1px;
+      background: linear-gradient(135deg, rgba(124,130,255,0.5), rgba(176,107,255,0.3), rgba(255,255,255,0.05));
+    }
+    .download-inner {
+      background: var(--bg-1); border-radius: 19px; padding: 44px; display: grid;
+      grid-template-columns: 1.1fr 1fr; gap: 44px; align-items: center;
+    }
+    .dl-os { display: inline-flex; align-items: center; gap: 8px; color: var(--text-3); font-size: 14px; margin-bottom: 16px; }
+    .download-inner h3 { font-size: 30px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+    .download-inner .ver { color: var(--text-3); margin-bottom: 24px; font-size: 15px; }
+    .download-inner .ver b { color: var(--text); font-weight: 600; }
+    .dl-buttons { display: flex; flex-direction: column; gap: 10px; }
+    .dl-buttons .btn { width: 100%; }
+    .dl-req { margin-top: 16px; font-size: 12.5px; color: var(--text-4); text-align: center; }
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+    .steps li { display: flex; gap: 14px; align-items: flex-start; }
+    .steps .n {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent);
+      background: var(--grad-soft); border: 1px solid var(--border);
+    }
+    .steps .t { font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
+    .steps .t b { color: var(--text); font-weight: 600; }
+    .steps code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 5px; color: var(--text); }
+
+    /* ════════════════════════ MANUAL ════════════════════════ */
+    .manual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+    .panel h3 { font-size: 15px; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 9px; }
+    .panel h3 .ico { color: var(--accent); display: inline-flex; }
+    .kbds { display: flex; flex-direction: column; gap: 11px; }
+    .kbd-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .kbd-row .desc { color: var(--text-3); font-size: 14px; }
+    .keys { display: flex; gap: 5px; flex-shrink: 0; }
+    kbd {
+      font-family: var(--mono); font-size: 12px; color: var(--text-2);
+      background: var(--bg-2); border: 1px solid var(--border-strong); border-bottom-width: 2px;
+      border-radius: 6px; padding: 3px 7px; line-height: 1;
+    }
+    .codeblock {
+      background: #0a0b0d; border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .codeblock-head { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .codeblock-head .d { width: 10px; height: 10px; border-radius: 50%; background: #2a2c30; }
+    .codeblock-head .ttl { margin-left: 8px; font-family: var(--mono); font-size: 12px; color: var(--text-4); }
+    .codeblock pre { margin: 0; padding: 16px 18px; overflow-x: auto; }
+    .codeblock code { font-family: var(--mono); font-size: 13px; line-height: 1.8; color: var(--text-2); white-space: pre; }
+    .codeblock .c { color: var(--text-4); }
+    .codeblock .p { color: var(--accent); }
+    .manual-foot { text-align: center; margin-top: 36px; }
+
+    /* ════════════════════════ SPONSOR ════════════════════════ */
+    .sponsor-card {
+      max-width: 820px; margin: 0 auto; text-align: center; border-radius: 20px; padding: 56px 44px;
+      background: radial-gradient(120% 140% at 50% 0%, rgba(124,130,255,0.12), transparent 60%), rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+    }
+    .sponsor-card .heart {
+      width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 22px; display: flex; align-items: center; justify-content: center;
+      background: var(--grad-soft); border: 1px solid var(--border); color: #ff7eb6;
+    }
+    .sponsor-card h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 14px; }
+    .sponsor-card p { color: var(--text-3); font-size: 17px; max-width: 520px; margin: 0 auto 32px; }
+    .sponsor-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .sponsor-ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+    .way { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 22px; text-align: left; }
+    .way .ico { color: var(--accent); margin-bottom: 12px; display: inline-flex; }
+    .way h4 { font-size: 14.5px; font-weight: 600; margin-bottom: 6px; }
+    .way p { font-size: 13px; color: var(--text-3); margin: 0; }
+
+    /* ════════════════════════ FOOTER ════════════════════════ */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 48px 0 40px; margin-top: 40px; }
+    .foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .foot .brand { font-size: 15px; }
+    .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
+    .foot-links a { color: var(--text-3); font-size: 14px; transition: color 0.15s; }
+    .foot-links a:hover { color: var(--text); }
+    .foot-copy { margin-top: 24px; color: var(--text-4); font-size: 13px; }
+
+    /* ════════════════════════ MOBILE NAV ════════════════════════ */
+    .menu-btn { display: none; }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .download-inner { grid-template-columns: 1fr; gap: 32px; }
+      .manual-grid { grid-template-columns: 1fr; }
+      .sponsor-ways { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+        position: absolute; top: 64px; left: 0; right: 0; padding: 12px 16px 16px;
+        background: rgba(8,9,10,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+      }
+      .menu-btn { display: inline-flex; }
+      .nav-actions .btn { display: none; }
+      .hero { padding-top: 64px; }
+      .card.span2 { grid-column: span 1; }
+    }
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero-cta .btn, .sponsor-cta .btn { width: 100%; }
+      .download-inner { padding: 28px 22px; }
+      .sponsor-card { padding: 40px 24px; }
+    }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <header id="top">
+    <div class="wrap nav">
+      <a href="#top" class="brand">
+        <img src="assets/comux_logo.png" alt="Comux 로고" />
+        <span>Comux</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#intro">소개</a>
+        <a href="#download">다운로드</a>
+        <a href="#manual">메뉴얼</a>
+        <a href="#sponsor">스폰서</a>
+      </nav>
+      <div class="nav-actions">
+        <!-- EDIT: 공개 저장소 -->
+        <a class="icon-link" href="https://github.com/Jeonghyeon-Ryu/Comux-Release" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <a class="btn btn-primary btn-sm" href="#download">다운로드</a>
+        <button class="btn btn-ghost btn-sm menu-btn" id="menuBtn" aria-label="메뉴">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════ HERO / 소개 ═══════════ -->
+  <section class="hero" id="intro">
+    <div class="wrap">
+      <span class="eyebrow reveal"><span class="dot"></span> Windows · AI 에이전트 터미널</span>
+      <h1 class="reveal">AI 에이전트를<br /><span class="grad">한 화면에서 지휘</span>하세요</h1>
+      <p class="sub reveal">
+        Comux는 Claude Code 같은 AI 에이전트를 동시에 띄우고 관리하도록 설계된
+        Windows 터미널 멀티플렉서입니다. 가로 워크스페이스 탭, 분할 패널, 내장 브라우저,
+        그리고 에이전트가 멈추거나 끝나면 알려주는 실시간 상태 알림까지.
+      </p>
+      <div class="hero-cta reveal">
+        <a class="btn btn-primary" href="#download">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Windows용 다운로드
+        </a>
+        <a class="btn btn-ghost" href="#manual">메뉴얼 보기</a>
+      </div>
+      <div class="hero-meta reveal">무료 · 오픈소스 · Windows 10/11 (x64)</div>
+    </div>
+
+    <div class="wrap">
+      <div class="shot reveal">
+        <div class="shot-glow"></div>
+        <div class="mock" role="img" aria-label="Comux 인터페이스 미리보기">
+
+          <!-- titlebar -->
+          <div class="mk-title">
+            <img class="mk-logo" src="assets/comux_logo.png" alt="" />
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 3.5a.75.75 0 0 0-1.5 0v3.75H3.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V8.75h3.75a.75.75 0 0 0 0-1.5H8.75z"/></svg></span>
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.7c.9 0 1.7.5 2.3 1.2.3.4.8.8 1.3.8h4.7A1.5 1.5 0 0 1 15 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5z"/></svg></span>
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4.4L11.6 1zm3 1h5v3H5z"/></svg></span>
+            <span class="mk-ttl">comux — Workspace</span>
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v4M8 11h.01"/></svg></span>
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a3 3 0 0 0-3 3v2.2c0 .5-.2 1-.5 1.4L3 9.8h10l-1.5-1.7c-.3-.4-.5-.9-.5-1.4V4.5a3 3 0 0 0-3-3M6.5 11a1.5 1.5 0 0 0 3 0"/></svg></span>
+            <span class="mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M13 3l-1.5 1.5M4.5 11.5 3 13"/></svg></span>
+            <span style="flex:1"></span>
+            <span class="mk-win"><span>–</span><span>▢</span><span>✕</span></span>
+          </div>
+
+          <!-- workspace tabs (가로 탭) -->
+          <div class="mk-tabs">
+            <div class="mk-tab"><span class="mk-dot ok"></span>Search</div>
+            <div class="mk-tab"><span class="mk-dot run"></span>Prodockr</div>
+            <div class="mk-tab"><span class="mk-dot idle"></span>Manufacturer</div>
+            <div class="mk-tab active"><span class="mk-dot run"></span>aurora-web</div>
+            <div class="mk-tab"><span class="mk-dot stop"></span>api-gateway</div>
+            <div class="mk-tab-new"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8.75 3.5a.75.75 0 0 0-1.5 0v3.75H3.5a.75.75 0 0 0 0 1.5h3.75v3.75a.75.75 0 0 0 1.5 0V8.75h3.75a.75.75 0 0 0 0-1.5H8.75z"/></svg></div>
+          </div>
+
+          <!-- body: file tree + code panel -->
+          <div class="mk-body">
+
+            <!-- file tree -->
+            <div class="mk-tree">
+              <div class="mk-tree-head"><span class="ttl">파일</span><span class="col">‹</span></div>
+              <div class="mk-tree-list">
+                <div class="mk-row" style="padding-left:6px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">aurora-web</span></div>
+
+                <div class="mk-row" style="padding-left:18px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">src</span></div>
+                <div class="mk-row" style="padding-left:30px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">components</span></div>
+                <div class="mk-row" style="padding-left:46px"><span class="chev"></span><span class="fi fi-tsx">TS</span><span class="nm">Button.tsx</span></div>
+                <div class="mk-row" style="padding-left:46px"><span class="chev"></span><span class="fi fi-tsx">TS</span><span class="nm">Modal.tsx</span></div>
+                <div class="mk-row" style="padding-left:46px"><span class="chev"></span><span class="fi fi-tsx">TS</span><span class="nm">Sidebar.tsx</span></div>
+                <div class="mk-row" style="padding-left:30px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">hooks</span></div>
+                <div class="mk-row" style="padding-left:46px"><span class="chev"></span><span class="fi fi-ts">TS</span><span class="nm">useAuth.ts</span></div>
+                <div class="mk-row" style="padding-left:30px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">styles</span></div>
+                <div class="mk-row" style="padding-left:46px"><span class="chev"></span><span class="fi fi-css">#</span><span class="nm">globals.css</span></div>
+                <div class="mk-row sel" style="padding-left:30px"><span class="chev"></span><span class="fi fi-tsx">TS</span><span class="nm">App.tsx</span></div>
+                <div class="mk-row" style="padding-left:30px"><span class="chev"></span><span class="fi fi-ts">TS</span><span class="nm">main.ts</span></div>
+                <div class="mk-row" style="padding-left:30px"><span class="chev"></span><span class="fi fi-js">JS</span><span class="nm">vite.config.js</span></div>
+
+                <div class="mk-row" style="padding-left:18px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">server</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-go">GO</span><span class="nm">main.go</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-rs">RS</span><span class="nm">handlers.rs</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-sql">DB</span><span class="nm">schema.sql</span></div>
+
+                <div class="mk-row" style="padding-left:18px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">scripts</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-sh">$</span><span class="nm">deploy.sh</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-py">PY</span><span class="nm">seed.py</span></div>
+
+                <div class="mk-row" style="padding-left:18px"><span class="chev">▾</span><svg style="width:14px;height:14px;color:#d8a657;flex:none" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3A1.5 1.5 0 0 1 3 1.5h3l1.5 1.5H13A1.5 1.5 0 0 1 14.5 4.5v8A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span class="nm">public</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-svg">SV</span><span class="nm">logo.svg</span></div>
+                <div class="mk-row" style="padding-left:34px"><span class="chev"></span><span class="fi fi-img">IM</span><span class="nm">hero.png</span></div>
+
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-docker">DK</span><span class="nm">Dockerfile</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-yml">YM</span><span class="nm">docker-compose.yml</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-json">{}</span><span class="nm">package.json</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-json">{}</span><span class="nm">tsconfig.json</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-html">&lt;&gt;</span><span class="nm">index.html</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-env">EN</span><span class="nm">.env</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-md">MD</span><span class="nm">README.md</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-git">GI</span><span class="nm">.gitignore</span></div>
+                <div class="mk-row" style="padding-left:18px"><span class="chev"></span><span class="fi fi-lock">LK</span><span class="nm">pnpm-lock.yaml</span></div>
+              </div>
+            </div>
+
+            <!-- terminal panes (split) -->
+            <div class="mk-term">
+              <div class="mk-pane">
+                <div class="mk-pane-head"><span class="mk-dot run"></span><span class="ph-ttl">&gt; Windows PowerShell</span><span class="ph-ic">＋ －　▢　✕</span></div>
+                <div class="mk-term-body"><span class="pr">PS C:\aurora-web&gt;</span> npm run dev
+
+  <span class="am">VITE</span> v6.4  <span class="dim">ready in 412 ms</span>
+
+  ➜  Local:   <span class="lnk">http://localhost:5199/</span>
+  ➜  Network: <span class="dim">use --host to expose</span>
+  ➜  <span class="dim">press</span> h <span class="dim">+ enter to show help</span></div>
+              </div>
+              <div class="mk-pane">
+                <div class="mk-pane-head"><span class="mk-dot run"></span><span class="ph-ttl">&gt; claude</span><span class="ph-ic">＋ －　▢　✕</span></div>
+                <div class="mk-term-body"><span class="am">✻</span> Cogitating… <span class="dim">(esc to interrupt · 14s)</span>
+
+<span class="ok2">●</span> Edited <span class="lnk">src/App.tsx</span> <span class="dim">(+12 -3)</span>
+<span class="ok2">●</span> Ran <span class="dim">npm test</span> — <span class="ok2">24 passed</span>
+<span class="ok2">●</span> Read <span class="lnk">hooks/useAuth.ts</span></div>
+              </div>
+            </div>
+
+            <!-- browser pane -->
+            <div class="mk-browser">
+              <div class="mk-addr">
+                <span class="nav">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.8-3.4L23 10M1 14l4.7 4.4A9 9 0 0 0 20.5 15"/></svg>
+                </span>
+                <span class="url">localhost:5199</span>
+              </div>
+              <div class="mk-web">
+                <div class="bw-top">
+                  <span class="bw-logo"></span><span class="nm">Aurora</span><span class="sp"></span><span class="bw-pill">● live</span>
+                </div>
+                <div class="bw-main">
+                  <h4>Welcome back, Jin 👋</h4>
+                  <div class="bw-cards">
+                    <div class="bw-card"><span>오늘 빌드</span><b>3,470</b></div>
+                    <div class="bw-card acc"><span>가동률</span><b>99.9%</b></div>
+                    <div class="bw-card"><span>활성 작업</span><b>105</b></div>
+                  </div>
+                  <div class="bw-chart">
+                    <i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:78%"></i><i style="height:56%"></i><i style="height:90%"></i><i style="height:70%"></i><i style="height:100%"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- code panel -->
+            <div class="mk-editor">
+              <div class="mk-etabs">
+                <div class="mk-etab active"><span class="fi fi-tsx">TS</span>App.tsx<span class="x">✕</span></div>
+                <div class="mk-etab"><span class="fi fi-ts">TS</span>useAuth.ts</div>
+              </div>
+              <div class="mk-code">
+                <div class="mk-gutter"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div></div>
+                <div class="mk-lines"><span class="ln"><span class="tk">import</span> React, { useState } <span class="tk">from</span> <span class="ts">'react'</span></span><span class="ln"><span class="tk">import</span> { <span class="tt">Sidebar</span> } <span class="tk">from</span> <span class="ts">'./components/Sidebar'</span></span><span class="ln"><span class="tk">import</span> { useAuth } <span class="tk">from</span> <span class="ts">'./hooks/useAuth'</span></span><span class="ln"> </span><span class="ln"><span class="tc">// App shell — wires auth state into the layout</span></span><span class="ln"><span class="tk">export default function</span> <span class="tf">App</span>() {</span><span class="ln">  <span class="tk">const</span> { user, login } = <span class="tf">useAuth</span>()</span><span class="ln">  <span class="tk">const</span> [open, setOpen] = <span class="tf">useState</span>(<span class="tk">true</span>)</span><span class="ln"> </span><span class="ln">  <span class="tk">if</span> (!user) {</span><span class="ln">    <span class="tk">return</span> &lt;<span class="tt">button</span> <span class="tv">onClick</span>={login}&gt;Sign in&lt;/<span class="tt">button</span>&gt;</span><span class="ln">  }</span><span class="ln"> </span><span class="ln">  <span class="tk">return</span> (</span><span class="ln">    &lt;<span class="tt">div</span> <span class="tv">className</span>=<span class="ts">"layout"</span>&gt;</span><span class="ln">      &lt;<span class="tt">Sidebar</span> <span class="tv">open</span>={open} <span class="tv">onToggle</span>={() =&gt; <span class="tf">setOpen</span>(!open)} /&gt;</span><span class="ln">      &lt;<span class="tt">main</span>&gt;</span><span class="ln">        &lt;<span class="tt">h1</span>&gt;Welcome, {user.name}&lt;/<span class="tt">h1</span>&gt;</span><span class="ln">        &lt;<span class="tt">p</span>&gt;You have {user.tasks.length} open tasks.&lt;/<span class="tt">p</span>&gt;</span><span class="ln">      &lt;/<span class="tt">main</span>&gt;</span><span class="ln">    &lt;/<span class="tt">div</span>&gt;</span><span class="ln">  )</span><span class="ln">}</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURES ═══════════ -->
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="label">왜 Comux인가</span>
+        <h2>에이전트 워크플로를 위한 모든 것</h2>
+        <p>여러 에이전트를 동시에 돌리고, 무슨 일이 일어나는지 놓치지 않도록 만들어졌습니다.</p>
+      </div>
+      <div class="grid">
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg></div>
+          <h3>워크스페이스 가로 탭</h3>
+          <p>상단 가로 탭으로 워크스페이스를 빠르게 전환. 각 탭의 알림점 색상(실행·완료·중단)으로 상태를 한눈에.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>패시브 Claude Code 통합</h3>
+          <p>훅과 CDP 프록시를 자동 설정해 에이전트·도구 활동을 추적. 별도 설정이 필요 없는 제로 컨피그.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div>
+          <h3>내장 브라우저</h3>
+          <p>터미널 옆 패널에서 에이전트의 브라우징을 실시간으로 확인. 스크립트 가능한 API도 제공합니다.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="12" y1="12" x2="21" y2="12"/></svg></div>
+          <h3>분할 패널</h3>
+          <p>각 탭 안에서 가로·세로로 자유롭게 분할. 탭은 keep-alive로 살아 있어 전환해도 세션이 끊기지 않습니다.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <h3>알림 &amp; 상태 표시</h3>
+          <p>에이전트가 주의를 요하면 패널이 빛나고, Windows 토스트와 알림 센터로 전달됩니다.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+          <h3>세션 저장 &amp; 복원</h3>
+          <p>분할 레이아웃·작업 디렉터리·브라우저 URL을 저장하고, 다시 켜면 그대로 복원합니다.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+          <h3>CLI &amp; 파이프 자동화</h3>
+          <p>comux CLI와 named pipe(JSON-RPC)로 워크스페이스·패널·에이전트를 스크립트로 제어합니다.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h3>GPU 가속 &amp; 테마</h3>
+          <p>xterm.js WebGL 렌더링으로 부드러운 출력. Windows Terminal·Ghostty 테마를 그대로 가져올 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ DOWNLOAD ═══════════ -->
+  <section class="section" id="download">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="label">다운로드</span>
+        <h2>지금 바로 시작하기</h2>
+        <p>설치 프로그램 없이 압축만 풀면 실행되는 포터블 빌드입니다.</p>
+      </div>
+
+      <div class="download-card reveal">
+        <div class="download-inner">
+          <div>
+            <span class="dl-os">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.1 10 4v7.5H3zM10 12.5V20l-7-1.1V12.5zM11 3.9 21 2.5v9H11zM21 12.5v9L11 20.1V12.5z"/></svg>
+              Windows · x64
+            </span>
+            <h3>Comux 포터블</h3>
+            <p class="ver">버전 <b>v1.0.0</b> · <b>.zip</b> 아카이브 (약 116MB)</p>
+            <div class="dl-buttons">
+              <!-- EDIT: 릴리스 에셋 직접 다운로드 -->
+              <a class="btn btn-primary" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.0.0/comux-1.0.0-win-x64.zip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                comux-1.0.0-win-x64.zip 다운로드
+              </a>
+              <a class="btn btn-ghost" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases" target="_blank" rel="noopener">모든 릴리스 보기</a>
+            </div>
+            <p class="dl-req">Comux는 Windows 10 / 11 (x64) 전용입니다.<br />macOS 사용자는 <a href="https://cmux.com" target="_blank" rel="noopener" style="color:var(--text-3);text-decoration:underline">cmux</a>를 이용하세요.</p>
+          </div>
+
+          <div>
+            <ol class="steps">
+              <li><span class="n">1</span><span class="t"><b>압축 해제</b> — 내려받은 <code>.zip</code>을 원하는 폴더에 풉니다.</span></li>
+              <li><span class="n">2</span><span class="t"><b>실행</b> — 폴더 안의 <code>Comux.exe</code>를 더블클릭합니다.</span></li>
+              <li><span class="n">3</span><span class="t"><b>차단 해제</b> — 처음 차단되면 zip 우클릭 → 속성 → <b>차단 해제</b> 후 풀어주세요 <span style="color:var(--text-4)">(Mark of the Web)</span>.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ MANUAL ═══════════ -->
+  <section class="section" id="manual">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="label">메뉴얼</span>
+        <h2>몇 분이면 익숙해집니다</h2>
+        <p>자주 쓰는 단축키와 CLI 명령으로 빠르게 출발하세요.</p>
+      </div>
+
+      <div class="manual-grid">
+        <div class="panel reveal">
+          <h3><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h0M10 9h0M14 9h0M18 9h0M6 13h0M18 13h0M9 13h6"/></svg></span>주요 단축키</h3>
+          <div class="kbds">
+            <div class="kbd-row"><span class="desc">새 워크스페이스</span><span class="keys"><kbd>Ctrl</kbd><kbd>N</kbd></span></div>
+            <div class="kbd-row"><span class="desc">워크스페이스 1~9 이동</span><span class="keys"><kbd>Ctrl</kbd><kbd>1 – 9</kbd></span></div>
+            <div class="kbd-row"><span class="desc">새 탭</span><span class="keys"><kbd>Ctrl</kbd><kbd>T</kbd></span></div>
+            <div class="kbd-row"><span class="desc">오른쪽 분할</span><span class="keys"><kbd>Ctrl</kbd><kbd>D</kbd></span></div>
+            <div class="kbd-row"><span class="desc">아래쪽 분할</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>D</kbd></span></div>
+            <div class="kbd-row"><span class="desc">패널 이동</span><span class="keys"><kbd>Alt</kbd><kbd>←↑↓→</kbd></span></div>
+            <div class="kbd-row"><span class="desc">패널 줌</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>↵</kbd></span></div>
+            <div class="kbd-row"><span class="desc">전체화면</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>F</kbd></span></div>
+            <div class="kbd-row"><span class="desc">사이드바 토글</span><span class="keys"><kbd>Ctrl</kbd><kbd>B</kbd></span></div>
+            <div class="kbd-row"><span class="desc">명령 팔레트</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>P</kbd></span></div>
+            <div class="kbd-row"><span class="desc">내장 브라우저</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd></span></div>
+            <div class="kbd-row"><span class="desc">코드 패널</span><span class="keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>E</kbd></span></div>
+          </div>
+        </div>
+
+        <div class="panel reveal">
+          <h3><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>CLI 빠른 시작</h3>
+          <div class="codeblock">
+            <div class="codeblock-head"><span class="d"></span><span class="d"></span><span class="d"></span><span class="ttl">comux</span></div>
+            <pre><code><span class="c"># 새 워크스페이스 열기</span>
+<span class="p">comux</span> new-workspace --title "build"
+
+<span class="c"># 패널을 아래로 분할</span>
+<span class="p">comux</span> split --down
+
+<span class="c"># 터미널에 텍스트 전송</span>
+<span class="p">comux</span> send "npm run dev"
+
+<span class="c"># 내장 브라우저 열기</span>
+<span class="p">comux</span> browser open localhost:5199
+
+<span class="c"># 에이전트 스폰 · 알림</span>
+<span class="p">comux</span> agent spawn --label "review"
+<span class="p">comux</span> notify "빌드 완료"</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="manual-foot reveal">
+        <a class="btn btn-ghost" href="https://github.com/Jeonghyeon-Ryu/Comux-Release" target="_blank" rel="noopener">
+          자세한 문서 보기
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SPONSOR ═══════════ -->
+  <section class="section" id="sponsor">
+    <div class="wrap">
+      <div class="sponsor-card reveal">
+        <div class="heart"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.5-10-10C.5 7 2.5 4 6 4c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5.5 3 4 7-2 4.5-10 10-10 10z"/></svg></div>
+        <h2>Comux를 후원해 주세요</h2>
+        <p>Comux는 1인 개발 오픈소스 프로젝트입니다. 여러분의 후원은 새 기능과 유지보수에 직접 쓰입니다.</p>
+        <div class="sponsor-cta">
+          <!-- EDIT: GitHub Sponsors -->
+          <a class="btn btn-primary" href="https://github.com/sponsors/Jeonghyeon-Ryu" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.5-10-10C.5 7 2.5 4 6 4c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5.5 3 4 7-2 4.5-10 10-10 10z"/></svg>
+            GitHub Sponsors로 후원
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/Jeonghyeon-Ryu/Comux-Release" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9 12 2"/></svg>
+            GitHub에서 ⭐ 누르기
+          </a>
+        </div>
+
+        <div class="sponsor-ways">
+          <div class="way">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9 12 2"/></svg></span>
+            <h4>스타 &amp; 공유</h4>
+            <p>저장소에 스타를 누르고 주변에 알려주세요. 가장 쉬운 후원입니다.</p>
+          </div>
+          <div class="way">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg></span>
+            <h4>버그 리포트</h4>
+            <p>이슈를 남겨 주시면 더 안정적인 Comux를 만드는 데 큰 도움이 됩니다.</p>
+          </div>
+          <div class="way">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg></span>
+            <h4>기여하기</h4>
+            <p>PR과 아이디어를 환영합니다. 함께 만드는 터미널이 됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <a href="#top" class="brand"><img src="assets/comux_logo.png" alt="Comux" style="width:24px;height:24px;border-radius:6px" /> <span>Comux</span></a>
+        <div class="foot-links">
+          <a href="#intro">소개</a>
+          <a href="#download">다운로드</a>
+          <a href="#manual">메뉴얼</a>
+          <a href="#sponsor">스폰서</a>
+          <a href="https://github.com/Jeonghyeon-Ryu/Comux-Release" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <div class="foot-copy">© 2026 Comux · AI 에이전트를 위한 Windows 터미널 멀티플렉서 · cmux의 Windows 포팅</div>
+    </div>
+  </footer>
+
+  <script>
+    // Header shadow on scroll
+    const header = document.getElementById('top');
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const navLinks = document.getElementById('navLinks');
+    menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
