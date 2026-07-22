@@ -1,5 +1,7 @@
 # Comux — Release
 
+## ★매뉴얼 업데이트 중입니다.
+
 Comux 포터블 빌드 배포 저장소입니다. 최신 버전은 [Releases](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases)에서 받을 수 있습니다.
 
 Comux is a Windows terminal multiplexer for AI agents.
