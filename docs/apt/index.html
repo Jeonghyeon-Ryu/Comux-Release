@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Comux APT repository</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 46rem; margin: 4rem auto; padding: 0 1.5rem;
+         font: 15px/1.65 ui-sans-serif, system-ui, sans-serif; }
+  h1 { font-size: 1.35rem; margin-bottom: .25rem; }
+  p.sub { margin-top: 0; opacity: .7; }
+  pre { padding: 1rem; border-radius: .5rem; overflow-x: auto;
+        background: #f4f4f5; border: 1px solid #e4e4e7; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: .35rem 1rem; }
+  dt { opacity: .6; } dd { margin: 0; }
+  @media (prefers-color-scheme: dark) {
+    pre { background: #18181b; border-color: #27272a; }
+  }
+</style>
+
+<h1>Comux APT repository</h1>
+<p class="sub">Debian / Ubuntu packages for <a href="../">Comux</a>, the terminal multiplexer for AI agents.</p>
+
+<pre><code>sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://jeonghyeon-ryu.github.io/Comux-Release/apt/comux.gpg \
+  | sudo tee /etc/apt/keyrings/comux.gpg &gt; /dev/null
+
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/comux.gpg] \
+https://jeonghyeon-ryu.github.io/Comux-Release/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/comux.list
+
+sudo apt update &amp;&amp; sudo apt install comux</code></pre>
+
+<dl>
+  <dt>Suite</dt><dd><code>stable</code> · component <code>main</code> · architecture <code>amd64</code></dd>
+  <dt>Key</dt><dd><a href="comux.gpg">comux.gpg</a> · <a href="comux.asc">comux.asc</a><br />
+      <code>9ED2 41E5 188E 1CE5 BF2A&nbsp; 073B 792F 5F77 BDDF F368</code></dd>
+  <dt>Retention</dt><dd>only the current release is kept in the pool</dd>
+</dl>
+
+<p>Running a terminal-only server? The TUI build needs no apt and no root:
+<code>curl -fsSL https://jeonghyeon-ryu.github.io/Comux-Release/install.sh | sh</code></p>

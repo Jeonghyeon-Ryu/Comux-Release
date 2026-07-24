@@ -1,0 +1,43 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Fri, 24 Jul 2026 11:38:58 +0000
+Description: Comux — terminal multiplexer for AI agents
+Label: Comux
+Origin: Comux
+Suite: stable
+MD5Sum:
+ f931f620688e7b6a98d1641d4095fbce              192 Release
+ 1f5ddda3a3266703da39eda5b8de8b18              730 main/binary-amd64/Packages
+ 4a1d311eea53e7f532d207efa8dbff12              481 main/binary-amd64/Packages.gz
+SHA1:
+ 032b6a1df2c72a2f5c76cdcc566c7ff1f7253cf3              192 Release
+ aa71e5feb58208d82540ba2696ec85ca9dfcce39              730 main/binary-amd64/Packages
+ 13d7d54245ce116f40874245dcef7da804e5b13e              481 main/binary-amd64/Packages.gz
+SHA256:
+ 90c8a68c08d2e34bcd299aebb25262034319dfeb0b4da91a77a0b2f8448d6ada              192 Release
+ ef05a2c6a480b8a7ac5c460b5ff9cbdcf2565c10f381abdc083b0ea3e64e8f8b              730 main/binary-amd64/Packages
+ df602b8c2b94089fb17498580df661fadb2a24578a6c07bf1a04bd95d02181d3              481 main/binary-amd64/Packages.gz
+SHA512:
+ eb96ef8e2080a6d0839c04cdd04518a933b1e071c01dcb000a55f35ab9fd3c5534ea829c56365f3289f55174dfca390463ed9d52f4280f0f71357cbcf1131445              192 Release
+ 2dbd56c7aeba94b47201ade0963467329beb66ea981878d1b07dd01a3e8d837417c60d7c3ab6367ade01477dd3eddc80d43f83f32f23ee9473a2de2cfaa420fd              730 main/binary-amd64/Packages
+ f01055032dfce94bdffdaae8259327fe426982e687854ec839260075356d6d13ceac5892c8024cf3d4afa6e0bd28c5279151c819bb56dd9aef4709bf95849f2d              481 main/binary-amd64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEntJB5RiOHOW/Kgc7eS9fd73f82gFAmpjTtMACgkQeS9fd73f
+82gYSw/8C3Qlxr/YVEbF50jtPXPBp8P/CC8i562H67scx3ozyM8K7qs7M9a8VFld
+8sINMZ7CPCcZwtYHkDFYH//DqGA08Uvb/LEI/SpSh/phNcvylsT9aK2c61GdtUCR
+bAN7v3JlzzBl3YRs0jnTHd9d8GqQN9jJ4lT13qTe9v7FYV+Wt94Th2WCfYg66lYK
+VWROMBApuOUZ2FyKM2G2u9QkobixMPa/kGViFD6QqOJUe+zG11MD/osYpEApAkIG
+XEjLq7gznOEw4MZemwwr2hFBEB1Q6tMic6kMhnoe/brxHEcgSxbkNnjhhRlmwewO
+iCZ02rthv85lYTVSMlR3MKvAmf4Lmtr4XOSY8dB51pGD6flKdpw4z/hseeWyiD9j
+g5F9U5tovYlT8CfpDzB7sAXo2Wl4G8qv8/iACL0Ryi+Jtzqqqit6k1L0FpklTxpt
+hV/b9pfVUFyYLWcS1hHZ2q33X78YhvP+93EW/rAehSri5ZDxag2Fw4FQ+WsPFbSd
+Z6Dmo/CoxTuMsYtAYvfNsi6t32E3lNxJ+ugUUz1ca21AWCkjFTFi02SOnPp5mRuB
+ms5LkCtHyI73q3EALt/zj46r7S+4hvuXAGJN6Fm0ss92D982x9HKbOHRzXNgoa9P
+hP1J/0nJuGpFhHwjckYp/yYNinJk/Mx/BGyzWfW2w0QWo2aQC6c=
+=z7yu
+-----END PGP SIGNATURE-----

@@ -1,0 +1,120 @@
+name: Publish APT repository
+
+# Regenerates the signed apt repo under docs/apt/ (served by GitHub Pages) from
+# the .deb attached to a release. Only the newest package is kept, so the git
+# tree does not accumulate 80MB Electron builds.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (blank = latest)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apt-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends dpkg-dev apt-utils
+
+      - name: Resolve release and fetch the .deb
+        id: fetch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -eu
+          TAG="${EVENT_TAG:-$INPUT_TAG}"
+          [ -n "$TAG" ] || TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          mkdir -p /tmp/deb
+          if gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+               --pattern '*_amd64.deb' --dir /tmp/deb --clobber; then
+            DEB=$(find /tmp/deb -name '*_amd64.deb' | head -1)
+            echo "deb=$DEB" >> "$GITHUB_OUTPUT"
+            echo "Found $DEB"
+          else
+            echo "deb=" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG has no amd64 .deb — leaving the apt repo untouched"
+          fi
+
+      - name: Import signing key
+        if: steps.fetch.outputs.deb != ''
+        env:
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          set -eu
+          printf '%s' "$APT_GPG_PRIVATE_KEY" | gpg --batch --quiet --import
+          FPR=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/{print $10; exit}')
+          [ -n "$FPR" ] || { echo "no secret key imported"; exit 1; }
+          echo "APT_GPG_KEY_ID=$FPR" >> "$GITHUB_ENV"
+          echo "Signing key: $FPR"
+
+      - name: Rebuild the repository
+        if: steps.fetch.outputs.deb != ''
+        env:
+          APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
+        run: |
+          chmod +x .github/scripts/build-apt-repo.sh
+          .github/scripts/build-apt-repo.sh "${{ steps.fetch.outputs.deb }}" "$GITHUB_WORKSPACE"
+
+      - name: Commit and push
+        if: steps.fetch.outputs.deb != ''
+        run: |
+          set -eu
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A docs/apt
+          if git diff --cached --quiet; then
+            echo "apt repo already up to date"
+            exit 0
+          fi
+          git commit -m "chore(apt): publish ${{ steps.fetch.outputs.tag }}"
+          git push
+
+      - name: Verify the published repository
+        if: steps.fetch.outputs.deb != ''
+        run: |
+          set -eu
+          BASE=https://jeonghyeon-ryu.github.io/Comux-Release
+          VER=$(dpkg-deb -f "${{ steps.fetch.outputs.deb }}" Version)
+
+          echo "Waiting for GitHub Pages to serve $VER…"
+          for i in $(seq 1 40); do
+            if curl -fsSL "$BASE/apt/dists/stable/main/binary-amd64/Packages" 2>/dev/null \
+                 | grep -q "^Version: $VER$"; then
+              echo "Pages is serving $VER (after ${i}0s)"; break
+            fi
+            [ "$i" = 40 ] && { echo "::error::Pages never served $VER"; exit 1; }
+            sleep 10
+          done
+
+          docker run --rm -e BASE="$BASE" debian:bookworm-slim bash -eux -c '
+            apt-get update -qq
+            apt-get install -y --no-install-recommends curl ca-certificates gnupg >/dev/null
+            install -d /etc/apt/keyrings
+            curl -fsSL "$BASE/apt/comux.gpg" -o /etc/apt/keyrings/comux.gpg
+            echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/comux.gpg] $BASE/apt stable main" \
+              > /etc/apt/sources.list.d/comux.list
+            apt-get update
+            apt-cache policy comux
+            cd /tmp && apt-get download comux
+            ls -l /tmp/comux_*.deb
+          '

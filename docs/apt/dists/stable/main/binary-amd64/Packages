@@ -1,0 +1,20 @@
+Package: comux
+Version: 1.1.0
+Architecture: amd64
+Maintainer: Jeonghyeon-Ryu <axteam.sit@gmail.com>
+Installed-Size: 305968
+Depends: libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1, libsecret-1-0
+Recommends: libappindicator3-1
+Filename: pool/main/c/comux/comux_1.1.0_amd64.deb
+Size: 83995958
+MD5sum: 87028cf1b74158d2087508b96f3aaf36
+SHA1: c41e48dfaef67a265de515360017b900a71b97a3
+SHA256: e954cd2098ca6ef829abcad75b139676696684992a0624b943959a7d4231d8a3
+Section: default
+Priority: optional
+Homepage: https://jeonghyeon-ryu.github.io/Comux-Release/
+Description: Terminal multiplexer for AI agents
+  Terminal multiplexer for AI agents
+License: MIT
+Vendor: Jeonghyeon-Ryu <axteam.sit@gmail.com>
+

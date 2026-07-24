@@ -1,0 +1,13 @@
+# Shell scripts are served verbatim to Linux hosts (docs/install.sh is piped
+# straight into sh) — CRLF would break them. Keep them LF no matter what the
+# committer's core.autocrlf says.
+*.sh            text eol=lf
+docs/install.sh text eol=lf
+
+# APT repository artifacts must never be line-ending normalised: the detached
+# signatures cover the exact bytes.
+*.deb           binary
+*.gpg           binary
+*.asc           -text
+docs/apt/dists/**  -text
+docs/apt/pool/**   binary
