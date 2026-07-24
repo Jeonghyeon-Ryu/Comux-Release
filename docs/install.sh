@@ -36,27 +36,46 @@ else die "need curl or wget"; fi
 command -v tar >/dev/null 2>&1 || die "need tar"
 
 # --- resolve the release ------------------------------------------------------
+# GitHub returns pretty-printed JSON, so an asset's fields follow its "name" line
+# and a windowed grep is enough to pair them up without a JSON parser.
+field_after_name() { # <json> <asset-name> <field-regex>
+  printf '%s\n' "$1" | grep -A40 "\"name\": *\"$2\"" \
+    | sed -n "s/.*\"$3\".*/\1/p" | head -1
+}
+asset_url()    { field_after_name "$1" "$2" 'browser_download_url": *"\([^"]*\)'; }
+asset_sha256() { field_after_name "$1" "$2" 'digest": *"sha256:\([0-9a-f]\{64\}\)'; }
+
 if [ -n "${COMUX_VERSION:-}" ]; then
   TAG="v${COMUX_VERSION#v}"
   step "installing comux $TAG"
   API_JSON=$(fetch "https://api.github.com/repos/$REPO/releases/tags/$TAG") \
     || die "no release tagged $TAG"
+  TARBALL="comux-tui-${TAG#v}-linux-$ARCH.tar.gz"
 else
   step "resolving the latest release"
   API_JSON=$(fetch "https://api.github.com/repos/$REPO/releases/latest") \
     || die "could not reach the GitHub API"
   TAG=$(printf '%s\n' "$API_JSON" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
-  [ -n "$TAG" ] || die "could not determine the latest version"
-fi
-VERSION=${TAG#v}
-TARBALL="comux-tui-$VERSION-linux-$ARCH.tar.gz"
+  TARBALL="comux-tui-${TAG#v}-linux-$ARCH.tar.gz"
 
-# GitHub returns pretty-printed JSON: the asset's fields follow its "name" line.
-URL=$(printf '%s\n' "$API_JSON" | grep -A40 "\"name\": *\"$TARBALL\"" \
-      | sed -n 's/.*"browser_download_url": *"\([^"]*\)".*/\1/p' | head -1)
-SHA=$(printf '%s\n' "$API_JSON" | grep -A40 "\"name\": *\"$TARBALL\"" \
-      | sed -n 's/.*"digest": *"sha256:\([0-9a-f]\{64\}\)".*/\1/p' | head -1)
-[ -n "$URL" ] || URL="https://github.com/$REPO/releases/download/$TAG/$TARBALL"
+  # A Windows-only release would be "latest" without carrying a TUI build, so
+  # fall back to the newest release that actually has one (the list is ordered
+  # newest first).
+  if ! printf '%s\n' "$API_JSON" | grep -q "\"name\": *\"$TARBALL\""; then
+    API_JSON=$(fetch "https://api.github.com/repos/$REPO/releases?per_page=30") \
+      || die "could not reach the GitHub API"
+    TARBALL=$(printf '%s\n' "$API_JSON" \
+      | sed -n "s/.*\"name\": *\"\(comux-tui-[0-9][^\"]*-linux-$ARCH\.tar\.gz\)\".*/\1/p" | head -1)
+    [ -n "$TARBALL" ] || die "no published comux-tui build for linux-$ARCH"
+  fi
+fi
+
+VERSION=$(printf '%s' "$TARBALL" | sed -n "s/^comux-tui-\(.*\)-linux-$ARCH\.tar\.gz$/\1/p")
+[ -n "$VERSION" ] || die "could not determine the version to install"
+
+URL=$(asset_url    "$API_JSON" "$TARBALL")
+SHA=$(asset_sha256 "$API_JSON" "$TARBALL")
+[ -n "$URL" ] || URL="https://github.com/$REPO/releases/download/v$VERSION/$TARBALL"
 
 # --- download -----------------------------------------------------------------
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/comux-install.XXXXXX")

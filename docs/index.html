@@ -700,23 +700,33 @@
               Linux 데스크톱 · x64
             </span>
             <h3>Comux for Linux</h3>
-            <p class="ver">버전 <b>v1.1.0</b> · <b>AppImage</b> 또는 <b>.deb</b></p>
+            <p class="ver">버전 <b>v1.1.1</b> · <b>APT 저장소</b> · AppImage · .deb</p>
             <div class="dl-buttons">
-              <a class="btn btn-primary" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.0/Comux-1.1.0.AppImage">
+              <a class="btn btn-primary" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/Comux-1.1.1.AppImage">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 AppImage 다운로드
               </a>
-              <a class="btn btn-ghost" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.0/comux_1.1.0_amd64.deb">.deb 다운로드</a>
+              <a class="btn btn-ghost" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux_1.1.1_amd64.deb">.deb 다운로드</a>
             </div>
-            <p class="dl-req">Windows와 동일한 데스크톱 앱입니다 — 분할 패널·내장 브라우저·알림 포함.</p>
+            <p class="dl-req">Windows와 동일한 데스크톱 앱입니다 — 분할 패널·내장 브라우저·알림 포함.<br />APT로 설치하면 이후 <code style="font-family:var(--mono)">apt upgrade</code> 로 함께 갱신됩니다.</p>
           </div>
 
           <div>
-            <ol class="steps">
-              <li><span class="n">1</span><span class="t"><b>AppImage</b> — <code>chmod +x Comux-1.1.0.AppImage</code> 후 실행합니다.</span></li>
-              <li><span class="n">2</span><span class="t"><b>.deb</b> — <code>sudo apt install ./comux_1.1.0_amd64.deb</code> 로 설치합니다.</span></li>
-              <li><span class="n">3</span><span class="t"><b>FUSE 오류 시</b> — <code>./Comux-1.1.0.AppImage --appimage-extract-and-run</code> 으로 실행하세요.</span></li>
-            </ol>
+            <div class="codeblock">
+              <div class="codeblock-head"><span class="d"></span><span class="d"></span><span class="d"></span><span class="ttl">apt · Debian / Ubuntu</span></div>
+              <pre><code><span class="c"># 1. 저장소 등록 (최초 한 번만)</span>
+<span class="p">sudo</span> install -d -m 0755 /etc/apt/keyrings
+<span class="p">curl</span> -fsSL https://jeonghyeon-ryu.github.io/Comux-Release/apt/comux.gpg \
+  | sudo tee /etc/apt/keyrings/comux.gpg &gt; /dev/null
+
+<span class="p">echo</span> "deb [arch=amd64 signed-by=/etc/apt/keyrings/comux.gpg] \
+https://jeonghyeon-ryu.github.io/Comux-Release/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/comux.list
+
+<span class="c"># 2. 설치 — 이후 업데이트도 apt로</span>
+<span class="p">sudo</span> apt update &amp;&amp; sudo apt install comux</code></pre>
+            </div>
+            <p class="dl-req" style="text-align:left">AppImage로 받았다면 <code style="font-family:var(--mono)">chmod +x</code> 후 실행하세요. FUSE 오류가 나면 <code style="font-family:var(--mono)">--appimage-extract-and-run</code> 을 붙입니다.</p>
           </div>
         </div>
       </div>
@@ -730,22 +740,32 @@
               Linux TUI · SSH · x64
             </span>
             <h3>Comux TUI (터미널 전용)</h3>
-            <p class="ver">버전 <b>v1.1.0</b> · <b>.tar.gz</b> (Node 내장 — 서버에 아무것도 설치할 필요 없음)</p>
+            <p class="ver">버전 <b>v1.1.1</b> · <b>설치 스크립트 한 줄</b> · Node 내장 · root 불필요</p>
             <div class="dl-buttons">
-              <a class="btn btn-primary" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.0/comux-tui-1.1.0-linux-x64.tar.gz">
+              <a class="btn btn-primary" href="https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux-tui-1.1.1-linux-x64.tar.gz">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                comux-tui 다운로드
+                tar.gz 직접 받기
               </a>
             </div>
             <p class="dl-req">GUI 없는 서버·SSH 환경용 tmux 스타일 멀티플렉서입니다.<br />데몬이 세션을 유지해 SSH가 끊겨도 셸이 살아 있습니다.</p>
           </div>
 
           <div>
-            <ol class="steps">
-              <li><span class="n">1</span><span class="t"><b>압축 해제</b> — <code>tar xzf comux-tui-1.1.0-linux-x64.tar.gz</code></span></li>
-              <li><span class="n">2</span><span class="t"><b>실행</b> — <code>comux-linux-x64/run.sh</code> (데몬 기동 + TUI 접속)</span></li>
-              <li><span class="n">3</span><span class="t"><b>SSH에서</b> — <code>ssh -t user@host '~/comux-linux-x64/run.sh'</code> · 분리는 <kbd>Ctrl+B</kbd> <kbd>Q</kbd>, 재접속은 다시 run.sh</span></li>
-            </ol>
+            <div class="codeblock">
+              <div class="codeblock-head"><span class="d"></span><span class="d"></span><span class="d"></span><span class="ttl">any Linux server</span></div>
+              <pre><code><span class="c"># 설치 — root도, Node도 필요 없습니다</span>
+<span class="p">curl</span> -fsSL https://jeonghyeon-ryu.github.io/Comux-Release/install.sh | sh
+
+<span class="c"># 실행 — 데몬 기동 + 접속</span>
+<span class="p">comux</span>
+
+<span class="c"># Ctrl+B q 로 분리해도 셸은 계속 살아 있습니다</span>
+<span class="c"># 다시 붙으려면 comux 를 한 번 더</span>
+
+<span class="c"># SSH에서 곧바로</span>
+<span class="p">ssh</span> -t user@host bash -lc comux</code></pre>
+            </div>
+            <p class="dl-req" style="text-align:left"><code style="font-family:var(--mono)">~/.local/share/comux</code> 에 설치되고 <code style="font-family:var(--mono)">~/.local/bin</code> 에 <code style="font-family:var(--mono)">comux</code> 명령이 생깁니다. 체크섬(sha256)을 검증합니다.</p>
           </div>
         </div>
       </div>
