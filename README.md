@@ -26,8 +26,8 @@
 | 대상 | 설치 | 직접 받기 |
 |:--|:--|:--|
 | **Windows** 데스크톱 | zip 압축 해제 후 실행 | [`comux-1.1.2-win-x64.zip`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux-1.1.2-win-x64.zip) |
-| **Linux** 데스크톱 | `apt install comux` | [AppImage](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/Comux-1.1.1.AppImage) · [.deb](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux_1.1.1_amd64.deb) |
-| **Linux** 서버 / SSH | 설치 스크립트 한 줄 | [`comux-tui-1.1.1-linux-x64.tar.gz`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux-tui-1.1.1-linux-x64.tar.gz) |
+| **Linux** 데스크톱 | `apt install comux` | [AppImage](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/Comux-1.1.2.AppImage) · [.deb](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux_1.1.2_amd64.deb) |
+| **Linux** 서버 / SSH | 설치 스크립트 한 줄 | [`comux-tui-1.1.2-linux-x64.tar.gz`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux-tui-1.1.2-linux-x64.tar.gz) |
 
 <details open>
 <summary><b>Windows</b></summary>
@@ -57,7 +57,7 @@ https://jeonghyeon-ryu.github.io/Comux-Release/apt stable main" \
 sudo apt update && sudo apt install comux
 ```
 
-AppImage를 선호한다면 `chmod +x Comux-1.1.1.AppImage` 후 실행하세요.
+AppImage를 선호한다면 `chmod +x Comux-1.1.2.AppImage` 후 실행하세요.
 FUSE 오류가 나면 `--appimage-extract-and-run` 을 붙입니다.
 
 </details>
