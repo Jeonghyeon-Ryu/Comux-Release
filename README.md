@@ -25,7 +25,7 @@
 
 | 대상 | 설치 | 직접 받기 |
 |:--|:--|:--|
-| **Windows** 데스크톱 | zip 압축 해제 후 실행 | [`comux-1.0.19-win-x64.zip`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.0.19/comux-1.0.19-win-x64.zip) |
+| **Windows** 데스크톱 | zip 압축 해제 후 실행 | [`comux-1.1.2-win-x64.zip`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux-1.1.2-win-x64.zip) |
 | **Linux** 데스크톱 | `apt install comux` | [AppImage](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/Comux-1.1.1.AppImage) · [.deb](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux_1.1.1_amd64.deb) |
 | **Linux** 서버 / SSH | 설치 스크립트 한 줄 | [`comux-tui-1.1.1-linux-x64.tar.gz`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.1/comux-tui-1.1.1-linux-x64.tar.gz) |
 
@@ -141,6 +141,7 @@ comux                # 다시 접속하면 그대로 복구
 | `n` | 새 워크스페이스 | `Ctrl+N` |
 | `PgUp` / `PgDn` | 이전 / 다음 워크스페이스 | `Ctrl+PgUp` |
 | `c` | 스크롤백(복사 모드) — `y` 복사, `q` 종료 | — |
+| `u` | **버전 / 업데이트 패널** | 타이틀바 버전 배지 |
 | `q` | 분리 (데몬은 계속 실행) | — |
 | `?` | **단축키 도움말 오버레이** | — |
 
@@ -189,6 +190,11 @@ comux browser click @e5
 
 **여러 대에서 같은 세션에 붙을 수 있나요?**
 가능합니다. 화면 크기는 가장 작은 클라이언트에 맞춰지며, 보기 전용으로 붙으려면 `comux attach --read-only` 를 사용하세요.
+
+**업데이트는 어떻게 확인하나요?**
+새 릴리즈가 나오면 상태줄에 `⬆ 1.1.2 (^B u)` 배지가 뜹니다. `Ctrl+B u` 를 누르면 이 설치본(apt / install.sh)에 맞는 업그레이드 명령이 나옵니다. 셸에서는 `comux upgrade` 로도 확인할 수 있습니다.
+데스크톱 앱은 타이틀바의 버전 배지를 누르세요 — Windows는 제자리 업데이트, Linux는 `apt upgrade` 명령을 알려줍니다.
+자동 확인을 끄려면 `COMUX_NO_UPDATE_CHECK=1` 을 설정하세요.
 
 **`apt update` 에서 서명 오류가 나요**
 키가 `/etc/apt/keyrings/comux.gpg` 에 있는지, `sources.list.d/comux.list` 의 `signed-by=` 경로가 같은지 확인하세요.
