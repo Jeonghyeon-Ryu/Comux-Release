@@ -1,15 +1,15 @@
 Package: comux
-Version: 1.1.2
+Version: 1.1.3
 Architecture: amd64
 Maintainer: Jeonghyeon-Ryu <axteam.sit@gmail.com>
-Installed-Size: 306133
+Installed-Size: 306150
 Depends: libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1, libsecret-1-0, libasound2t64 | libasound2
 Recommends: libappindicator3-1
-Filename: pool/main/c/comux/comux_1.1.2_amd64.deb
-Size: 84008368
-MD5sum: a15c9241d38faff233b42ca0aa678996
-SHA1: 711abf1f7af88f8cf1a72f8c65a810f437c53c7e
-SHA256: c0f4f51d8e13e1ceb5fe06bc889fe2db606a7a986cbcdca77daff7ed1d1ec070
+Filename: pool/main/c/comux/comux_1.1.3_amd64.deb
+Size: 84025022
+MD5sum: 19bb28be39b1060645f475a04d527e26
+SHA1: 938c2938b733127c1fe901bd325f60cd2ae71024
+SHA256: 352eb1cc8a31a9313880edd18fa65c9a5aed1ab8c915d48d9577fc50a60c7e1f
 Section: default
 Priority: optional
 Homepage: https://jeonghyeon-ryu.github.io/Comux-Release/
