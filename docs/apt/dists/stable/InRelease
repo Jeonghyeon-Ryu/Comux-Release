@@ -4,40 +4,40 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sat, 25 Jul 2026 03:03:24 +0000
+Date: Sat, 25 Jul 2026 14:49:47 +0000
 Description: Comux — terminal multiplexer for AI agents
 Label: Comux
 Origin: Comux
 Suite: stable
 MD5Sum:
- a46140bc536e1493221ac1412decea77              192 Release
- 2cf307d67fb090270ca7bb2d2ae5327a              758 main/binary-amd64/Packages
- 28a5ce797ca43c34ac9fc8148296ac5b              493 main/binary-amd64/Packages.gz
+ fca450fd79d583dfc236b69c1ea88912              192 Release
+ beb5fbf0e8c3a4fb70d0ace61d44117d              758 main/binary-amd64/Packages
+ a225bf304091d7462caf871e5e49132c              493 main/binary-amd64/Packages.gz
 SHA1:
- 0eb5239510c907afe3e231952c0e5baf3e09aa2b              192 Release
- 7b42645de5c119f601472249888fd7156c2d866e              758 main/binary-amd64/Packages
- 746d1451891366a768cd571840d08c774b9df222              493 main/binary-amd64/Packages.gz
+ 268e97bef12e3819992fec0942ae4356cd5917d8              192 Release
+ 98b1704c4c51cd2c59454480032bf0661ca2da5b              758 main/binary-amd64/Packages
+ 410e1d97e13e06b8b222ddefe409f177cc222396              493 main/binary-amd64/Packages.gz
 SHA256:
- aead158512db6cc8b77746fadb3981415831e7377632b755b001b272416be866              192 Release
- 94258d841118c056b18e936cf2699ad8a273a3e61aa5fcc58673cb4d72f49409              758 main/binary-amd64/Packages
- afcea41daa387dab47c5247bfb760c35fcf63f4b8260cfac00b01537ef8d102c              493 main/binary-amd64/Packages.gz
+ 48059f15f0220c72dbd4e43e9ae93ebc2cc1eb8fcd8fcd29c1350908afcb1f7f              192 Release
+ b607174d95a10320d7b46ea1f5c97de61f4c45f3b2f3e9fef2a5b3aee4c3dab9              758 main/binary-amd64/Packages
+ 65ddb8969386755883f3658b783084ace5e7ff28f725cb194dc9778bee6b2ed4              493 main/binary-amd64/Packages.gz
 SHA512:
- f4c050f3ce0e315fea009c422bfaf497b9b8810fbdf4cb914a003e8edff84ed0de0fcb3789d08ea651ada761f32efc93992378bc39db333036612d76bf9c982c              192 Release
- 07801a1e75aa6e1f51619fa1ae47f34344692ca202f033cc673e43f11347227c479267dfc5545fe9e913fe6249cd25f230189a0eaa24fcf78a73a1d5a6613467              758 main/binary-amd64/Packages
- e6678fd23e1def8a4b5432c2d846852896826699fd4356dd4137980914c41f426eb01ff077cb2c7eb3597dc0b990fda4fea30b56b4bc52d7f2938e627f2333b1              493 main/binary-amd64/Packages.gz
+ 99f12862ffb4cb4fce27dd21a0ec905239395e575b3d0fb6758059b9d3112a07d0578edb807e31f94ab7e52c2e7667f9c07dcdd69982effce0cc72252a06916f              192 Release
+ 0c3811ae51363fab425df6fcaa34e0d1044c291fcaa4e8edd4ac1ed16c0bdce27b0a999b4d88c24c12aa414356c3b8a8d2ba3e83ecd9d9d0d6524592634a24d5              758 main/binary-amd64/Packages
+ cbf8cd85d4cc365a6e3134c18eb82ea35247f3a8afe360da4877641add847ebbfe12da5cc282b12b137c0e3e44ba82593bae38baef09dad9f4519bde5465c177              493 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEntJB5RiOHOW/Kgc7eS9fd73f82gFAmpkJ3wACgkQeS9fd73f
-82j0og//bhmT6PbuBivxFqC9WcozjUyK3wnCYpNP/zkOMVAMYJM142lyrj7v3efS
-TorkD5S63pyQ1yswLDH0ZAMA1g5yc9PI770FSP9aIcGeTlmVpym8HZKCgVa7VvHp
-WfYASZckzDJMAYUiWK5dMT+WBYwWCPRbsuE3DSWxVQDbTZgc0zAcQQQEPxFW5jLP
-AHVUIK2Mmntocsz4JnaHaWUDjrcLLetdPozDhCwkINIR3dT8Bz3zGkOkSpfH+cyp
-9+61VisQQklH8PGvUDwUZCS2uk8V7k/g1JRM/hjBuRh096oqi0RqDPjQWinVnhqL
-ntYGmsf8yEg+3SHji9XLvzBN7R0JmwgSq6xcef14G5XL97L4ZfmFFComK0ML32Xa
-P6aNZVw8Cg8xyvGVyyNtUf7cS5QdBJdYxFx0EbgTZhjLvNzoS8YGRDyCHHDk+zu2
-Koo/2md0WbQSVSK3vPtQiLYpkC3NQmm0rVlaUwFNy9J5FRfNXQpIFp/Eqy5pZ3Yw
-udkJwvQa6uaKtx5f92Mg31ZhwY11ZCV53zf8TEAlgcAJUHYIaUZ1aKU2hdD7sgvT
-5nOvZaWWVad8KSDKUy738hMGIYH5DJFnW46kSbgPfoVFSTiuAfwab3ly6bKiU2rB
-gqs9OI4py3v6O10ELkG3TzAsfgb31XQ7yI3Itv/tc5GxPC9Xo7Q=
-=8mSO
+iQIzBAEBCgAdFiEEntJB5RiOHOW/Kgc7eS9fd73f82gFAmpkzQsACgkQeS9fd73f
+82iODQ//RNcdRocz290oBLQJwZ219D9uD8wkXXuA4GbfB5fVJC/0xzG287tStbFP
+Nsq/DZXLKRDPwNAeGLuvEuV9VlKIaayDdIVsk5XfEzZshlzKnfzsV8+b+gJcx/6E
+5VteXGrWl6XXGdpUqNv8guBAnTAo+PqlzLRYU5y7xb0TYn2ak/1ykGJyN33cGrFN
+dMq5UU27lg6NdpZABTbYHi8JuaJFKP5PKUyMckK9srBwkXSjilEXd+Iy5Xpu2JhS
+K8q5KDeEN4+J91afBjb//O4hgz8TwVcGKi5/M8P2Vv19OhdO5YZnPnahT+i3RWNW
+184tjU8KPXxc2/HvKNLJaSipG5zgzndPJ61aSFjjJ3lFVMmKHk7ehwb9DjyUU4gA
+0VZsq68MB0E3FXPpLnJpV1x+EkLnvaKWN5FWtf70kbLS16Bs6p2gO6AX8rvlsuiV
+CDjIsCDrFGGNaz/4Mr5br0JSJozcdmSx0H0Wo1HlZ/87At5+Cn7t5N5z82RlU9Mj
+uIhpQtQ2753Knz03Sz0Ds0uNaNWAH9f/aF+Bup27NMzsO4zqvOgYjUJeguOoBIxn
+7DAKGBZ12f2b7TbbZzywPOscohNqt4RZGtSmYZjAxIBjs+UC8/mcMLpIQnX7qbHo
+L4HW+3AXN5y5w3dI6dCMrOhXX0YxoV7uG5f0S09AT2gI9s2U+cY=
+=RDqe
 -----END PGP SIGNATURE-----
