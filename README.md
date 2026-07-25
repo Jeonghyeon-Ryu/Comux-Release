@@ -26,8 +26,8 @@
 | 대상 | 설치 | 직접 받기 |
 |:--|:--|:--|
 | **Windows** 데스크톱 | zip 압축 해제 후 실행 | [`comux-1.1.2-win-x64.zip`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux-1.1.2-win-x64.zip) |
-| **Linux** 데스크톱 | `apt install comux` | [AppImage](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/Comux-1.1.2.AppImage) · [.deb](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux_1.1.2_amd64.deb) |
-| **Linux** 서버 / SSH | 설치 스크립트 한 줄 | [`comux-tui-1.1.2-linux-x64.tar.gz`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.2/comux-tui-1.1.2-linux-x64.tar.gz) |
+| **Linux** 데스크톱 | `apt install comux` | [AppImage](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.3/Comux-1.1.3.AppImage) · [.deb](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.3/comux_1.1.3_amd64.deb) |
+| **Linux** 서버 / SSH | 설치 스크립트 한 줄 | [`comux-tui-1.1.3-linux-x64.tar.gz`](https://github.com/Jeonghyeon-Ryu/Comux-Release/releases/download/v1.1.3/comux-tui-1.1.3-linux-x64.tar.gz) |
 
 <details open>
 <summary><b>Windows</b></summary>
@@ -57,7 +57,7 @@ https://jeonghyeon-ryu.github.io/Comux-Release/apt stable main" \
 sudo apt update && sudo apt install comux
 ```
 
-AppImage를 선호한다면 `chmod +x Comux-1.1.2.AppImage` 후 실행하세요.
+AppImage를 선호한다면 `chmod +x Comux-1.1.3.AppImage` 후 실행하세요.
 FUSE 오류가 나면 `--appimage-extract-and-run` 을 붙입니다.
 
 </details>
@@ -140,7 +140,7 @@ comux                # 다시 접속하면 그대로 복구
 | `]` / `[` | 다음 / 이전 탭 | `Ctrl+Shift+]` |
 | `n` | 새 워크스페이스 | `Ctrl+N` |
 | `PgUp` / `PgDn` | 이전 / 다음 워크스페이스 | `Ctrl+PgUp` |
-| `c` | 스크롤백(복사 모드) — `y` 복사, `q` 종료 | — |
+| `c` | 스크롤백(복사 모드) — `Space` 선택 → 이동 → `y` 복사, `q` 종료 | — |
 | `u` | **버전 / 업데이트 패널** | 타이틀바 버전 배지 |
 | `q` | 분리 (데몬은 계속 실행) | — |
 | `?` | **단축키 도움말 오버레이** | — |
