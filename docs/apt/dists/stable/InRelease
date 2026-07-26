@@ -4,40 +4,40 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sun, 26 Jul 2026 14:52:56 +0000
+Date: Sun, 26 Jul 2026 18:09:21 +0000
 Description: Comux — terminal multiplexer for AI agents
 Label: Comux
 Origin: Comux
 Suite: stable
 MD5Sum:
- 3f95499884146ae4d785077503e8315d              192 Release
- 88573ae3fc3cb59b290e7e7f68badab7              758 main/binary-amd64/Packages
- 5e88ab5b04518b28df4fec3a68d1d58b              493 main/binary-amd64/Packages.gz
+ dbcf1d7d612f6364603e82dbbad64c93              192 Release
+ ac02510a1c03b19bf501a03a6629b550              758 main/binary-amd64/Packages
+ 7db8e754ad7eb704d660b4968bef1252              494 main/binary-amd64/Packages.gz
 SHA1:
- f69ad449ca1813d633c32f23db0959fd559dea60              192 Release
- 47dda170f426404721c1f4754ac4e0a235579ed3              758 main/binary-amd64/Packages
- 828f3dd7da6b0edfd6654eeab56a23bda051ddd4              493 main/binary-amd64/Packages.gz
+ 7a4e73e401ca57f6dcaea0c9675a1aca1626c581              192 Release
+ 7e48120dfea17ed9d57020be1d8985d1ed59b164              758 main/binary-amd64/Packages
+ 2ba150af6b4b1d6ad41f32ed93edd1fe7eaa01f7              494 main/binary-amd64/Packages.gz
 SHA256:
- 34a72246fba0dc9abb1b1e2bc9732cd9d58770c8f48aa504faf59e19c2c1c13b              192 Release
- c4458b236ed086113164c9c14c6d7f4e52bd3c00d92172517f150cff55fb49bf              758 main/binary-amd64/Packages
- 9f12ee8fe32acba4a1d5c5e9c51a3f5282b374e7a0c58cd605fd2de0867813b8              493 main/binary-amd64/Packages.gz
+ cb7511b15f04067951d655d86b976b69d07100e9cf9e6440f55e2b9c48be727a              192 Release
+ dfae291fd96f0e7752e7817a031a1ffd87f93282f1cc464d1d2a79257c6b6876              758 main/binary-amd64/Packages
+ 84ce21d7f42916ac4ea8e02eca28d93642cceb22b4d9d50f2d730099f800dedb              494 main/binary-amd64/Packages.gz
 SHA512:
- 3e2820f6aefe47843466bc0ef3cfaafd73e5fc262c52f5759c79cc245cd9966a7de4642f5299e7e5e9c03f746604a9c56f471a3637105c21e1066563d40f5a7f              192 Release
- 6551b11e00c1f1e05c3c8bd4a0a9db793c4f17372170b050e2812e2ce7184ab4dedadad50da4c89771f0436ae0d2a2b20d1fe7de0315b5982ece5d688aa7a8d9              758 main/binary-amd64/Packages
- 7f59b87afc03ff2e6962ec648bf0a09ddccfa0d7aab0ec993f80b76fde065943e9ed6a1c4eec7fe448d2f515c8d66d0bd7d80f81844fb58835d76a772c79d3a1              493 main/binary-amd64/Packages.gz
+ eb1a2e2c1a7cebd3356e7107f43fc8f17f9517306b0bec1210212fa02629af1a44ccdc56d0f7f9db97d1fcf3923c2193e3fc92c962a92989aadea15b812e244f              192 Release
+ fb9f9a01380721501bc273058cd348949283a5361b0081e5a88dfc407a7539a32d6b3daac162288ddd774edc615a2741b81bebbd70f8be1c8266770e6cf66f06              758 main/binary-amd64/Packages
+ c36caf8afc9cb4755c5416cb17a8143da859f10e64bf3745f0178ed8e2b846d626acbf75cfb3459da1c1bc5debaed43756080b1272458d627fda6c7875df7810              494 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEntJB5RiOHOW/Kgc7eS9fd73f82gFAmpmH0gACgkQeS9fd73f
-82jXrQ//UI0i2Nzuyd2m/iEJElVZZaAF6U41mAUosxavvzCisb39MraeSsw2I4IP
-X25ytJd3jxg893hWg816pJ0gK7JpR0dCDLf7fuwuEemwgRQFcOVoW6IqObkI0MDT
-P4JUOoNAJy4cLb54wjoyg17lOPT/sp+7D0layP6Q5I6Cj7gS6lNWj8njP2JB27Ok
-CT2tQtmGcZYv7+DilUlJd/PZQ4lY9KeKfcdupqX3Qefcxmx+tdKKR83UPicpFNvr
-WqsqndKs7WOGaAb7jjLWmz+ZhyvuNO+pmYxlAoF9cJEnA79cB04caEWbAftxvbgv
-TVNXAJnBEFKQRU5vg5oq8k1oZKAE9slNaP5BiLzQv0yM+o+RyD64ZnVSIdix6vDm
-6nhlySZlZQlDwPvlu3zMx3mns0P8bbLABLfCzkgTJoJ3BxwrwHAk4ppw8FHcrn5W
-jFRMRi0ykn3FsS50Z3B/r9JXbb5+n8lpxGPqojapzQvfYtCp1xUmsLkN+RMjL4PO
-rNEinDbW5EUpg0CjB/Ls9jON+lua98RlD5L6NLvGFC+6GyuXPkPiarP7UjY/srWC
-MdcyckeCYG604UJuF0E0CxYMCX00Att9XDZiVrsuss2CVrAVhRtuFFjfYcMT7eod
-vXHLybw8BS2jAkjoludsnc49HkW/F1LH+JOq4bcRc+EdNGHjXSs=
-=Ji1D
+iQIzBAEBCgAdFiEEntJB5RiOHOW/Kgc7eS9fd73f82gFAmpmTVEACgkQeS9fd73f
+82iBAg//SomMgK0PRCfVoExhxkUOsMzxbvusG8YrJZgCAn7Zq2SQqfkvm48vBWQ1
+aFIz4TQcRwPkzAgY1MXwJM64qBGX2uGDEo0+CswRwD1Rdif9y60CW0lcmCPNktW5
+cFDt/iVhQ+Qqlzin8V3CQN8PXcnDrrnH/uv6VhyD8/G9i+umagL6f5iksA2u0wLJ
+NtXSgSONYOuX+pE/5iRbbwVY51vXOZdQriI8ugqf/LxNxoNph/7uLusxglv0X7e0
+/XWJwrOSILoyA6YRCnwuAcOA1UIlglXC0SjHUrDkE0sLXmE5wn/0Xzh6csM7Vusa
+GbCyYkEYNB72eeStH3FNy6zHqLlQP/8wVpWVaRm/Sp1Rg8KTKHxRd5PKt2tuyl/9
+8T31kXapSmBeWJoEs8sQylok0bt6tSVC9h/SYe8tMVY6lm0amNFgvjFCZBMvbiXP
+Mr77onfHvVDOKV/AT7J00gpTOpSgLmMR+I9Ba+uJgELGHEH/La8u+F2l+1hObJH2
+4AyF0I4rTB2RHHk778ySq+WWjJQs97MHOvkR1xpWuuM3ouQV59lMXIWdmJRUNNxx
+QtuqiiSV7buqhyiCZ2sb3yChGsJuWQg37tE3IiMKrQD7me7kPzbz1FXgiuaHznVs
+XW02d4yrXd4WyzUCmrNHBMom3HplF80LLKxn929L52F2M1kzK9E=
+=98Bb
 -----END PGP SIGNATURE-----
