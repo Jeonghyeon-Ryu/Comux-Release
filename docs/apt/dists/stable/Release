@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sat, 14 Nov 2026 20:29:12 +0000
+Date: Sun, 15 Nov 2026 02:33:33 +0000
 Description: Comux — terminal multiplexer for AI agents
 Label: Comux
 Origin: Comux
 Suite: stable
 MD5Sum:
- 802ceef333be421abfa997de86356aaf              192 Release
- 96639562d8b3f8ab4fe047f0695fa4a2              760 main/binary-amd64/Packages
- bb8531ae8b1fd56ca2c950a02bbbb23e              491 main/binary-amd64/Packages.gz
+ bb74db1504131b52fd603ee6eac27279              192 Release
+ 268ff00ccb4912287deeeb8e8b9a949d              760 main/binary-amd64/Packages
+ eab9b202ba76fd6dd53734ca3151145b              493 main/binary-amd64/Packages.gz
 SHA1:
- eaff4ad0286e46b14fe6ecb3b3e97fb6aaf3cb28              192 Release
- 44eac2fe7a6940170c6d0cb58d9664f9c6a8e65f              760 main/binary-amd64/Packages
- ff37717d92894f522685653950444f8bf4fe37f8              491 main/binary-amd64/Packages.gz
+ aed08ceb6853deee3d8502b864ec561ec742dcde              192 Release
+ 41d016df7813b9a28bd979417350db2d1bcb24cf              760 main/binary-amd64/Packages
+ 2a371e300a6a48dfa6c5da574943c4f8d13604de              493 main/binary-amd64/Packages.gz
 SHA256:
- a22db717cef5a2190ea1af3078654aeb3e602f807c97a7e78a39f873a3e26e46              192 Release
- 7796f17e8cdb0d86f2c7d7f542a571bf427fb4082e29fdf60abcc23e3614dbb4              760 main/binary-amd64/Packages
- b088fa55a598606e95cee03089ec9733f0841725040b442653deb085d5380874              491 main/binary-amd64/Packages.gz
+ f53641586c9e6b59ef175f1214064524ac8228d1494d8653462a085559eba183              192 Release
+ c7c53575de31789ed06e390d6f351eaa04805eed2fc816cb244acfaee366da10              760 main/binary-amd64/Packages
+ bec73521da636f0fc65bf89ebb2b85034578e43fce945ab952d1483510aef908              493 main/binary-amd64/Packages.gz
 SHA512:
- 3e1d58d21a92366bd635ef4169bc9655469246d9653e0fd6f82ae3f97f15fd525d41f7c802e6dc23014cb34b20fc2ca3d7e70f26e198b030195c2f6583b7ad7a              192 Release
- c3ac3d64b0f4928e839a93fb92008a83304a53fd8871aeb31b88cfa33929adc3f47b8d1f7636afea0cda74fd6d736aac04dc5d2d1b5dbbbad80224f585f7a3a9              760 main/binary-amd64/Packages
- 7a5cd1f5360e6677b435500609824542121823a9184ff6d2fb404407888ce7cb1c2236685dc4ed84b7af5b09acb903798f3983e238a6b66f9234e08be28d2d46              491 main/binary-amd64/Packages.gz
+ bca7d26092a35d36322dfcc0db26600399d10b5deb32e4a77d5e6599d01b6ad9a786184acd66e84fc8111382d9f5432ac91f86f9e07a26829d904c552870fd3f              192 Release
+ 3cf55aaf1e86d3dc705b6d17323b42ac3f16e1d3923455867908620d14901e72160b94d8f72d0e5d9718d97085e2c1195d1db459794625192374df5d60b21731              760 main/binary-amd64/Packages
+ 6e492aa494ca0e5594ccad2962c5e2261cde3534f0e551e6fa6bc4d0249a0085cbfba5466bb5fcd02e436d7cc2ba1625360911f0f3576c1d07053340dfb147a8              493 main/binary-amd64/Packages.gz
